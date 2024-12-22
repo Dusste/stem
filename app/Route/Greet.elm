@@ -94,10 +94,6 @@ view :
     -> Shared.Model
     -> View (PagesMsg Msg)
 view app shared =
-    let
-        _ =
-            Debug.log "App" app
-    in
     { title = "Greetings"
     , body =
         [ Html.div [ HA.class "flex justify-center" ]
