@@ -1,0 +1,19 @@
+/* mobile */
+@media screen and (max-width: 600px) {
+  :root {
+    --header-content-width: 100%;
+  }
+}
+
+/* desktop */
+@media screen and (min-width: 1000px) {
+  :root {
+    --header-content-width: 1250px;
+  }
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 14px;
+}
