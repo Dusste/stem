@@ -20,7 +20,7 @@ jobs:
           echo "https://${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
           git config --global credential.helper store
 
-      - name: Bump version
+      - name: Check and bump version
         run: |
           if [ -f VERSION ]; then
             version=$(cat VERSION)
@@ -28,7 +28,7 @@ jobs:
             version="0.0.0"
           fi
 
-          # Increment patch version
+          # Increment patch version manually
           IFS='.' read -r major minor patch <<< "$version"
           new_version="$major.$minor.$((patch + 1))"
 
@@ -36,14 +36,20 @@ jobs:
           echo "$new_version" > VERSION
           echo "New version: $new_version"
 
-          # Export for future steps
+          # Export new version to be used later in other steps
           echo "new_version=$new_version" >> $GITHUB_ENV
 
-      - name: Commit version bump
+      - name: Bump version in package.json
         run: |
-          git add VERSION
+          # Bump the version in package.json (patch bump)
+          npm version patch --no-git-tag-version -m "Bump version to $new_version"
+
+      - name: Commit version bump and create tag
+        run: |
+          git add VERSION package.json
           git commit -m "Bump version to $new_version"
-          git push origin deploy
+          git tag "v$new_version"  # Create a tag for the version
+          git push origin deploy --tags  # Push changes and tags to the deploy branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
