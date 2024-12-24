@@ -41,6 +41,7 @@ jobs:
 
       - name: Commit version bump
         run: |
+          git add VERSION
           git commit -m "Bump version to $new_version"
           git push origin deploy
         env:
