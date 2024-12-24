@@ -6,3 +6,4 @@ gen/
 .elm
 .elm-pages
 dist-server/
+functions
