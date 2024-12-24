@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: bff-container
-          image: aicmsregistry.azurecr.io/bff:1.2
+          image: aicmsregistry.azurecr.io/bff:latest
           env:
             - name: foo
               value: bar
