@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - master
+      - deploy
 
 jobs:
   build:
@@ -11,7 +11,39 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses:
+          actions/checkout@v3
+
+          # 2. Bump version
+      - name: Bump version
+        id: bump_version
+        run: |
+          # Extract current version
+          if [ -f VERSION ]; then
+            version=$(cat VERSION)
+          else
+            version="0.0.0"
+          fi
+
+          # Increment patch version
+          IFS='.' read -r major minor patch <<< "$version"
+          new_version="$major.$minor.$((patch + 1))"
+
+          # Save the new version
+          echo "$new_version" > VERSION
+          echo "New version: $new_version"
+
+          # Export for future steps
+          echo "new_version=$new_version" >> $GITHUB_ENV
+
+      # 3. Commit the new version
+      - name: Commit version bump
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+          git add VERSION
+          git commit -m "Bump version to $new_version"
+          git push origin deploy
 
       - name: Login to Docker Hub
         run: docker login "${{ secrets.DOCKER_USERNAME }}".azurecr.io -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"

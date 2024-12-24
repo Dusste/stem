@@ -1,6 +1,7 @@
 {
   "name": "stem",
   "type": "module",
+  "version": "0.0.1",
   "scripts": {
     "postinstall": "elm-tooling install",
     "dev": "concurrently \"elm-pages dev\" \"npm run css:watch\"",
