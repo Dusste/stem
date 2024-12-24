@@ -11,14 +11,17 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses:
-          actions/checkout@v3
+        uses: actions/checkout@v3
 
-          # 2. Bump version
-      - name: Bump version
-        id: bump_version
+      - name: Configure Git
         run: |
-          # Extract current version
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+          echo "https://${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
+          git config --global credential.helper store
+
+      - name: Bump version
+        run: |
           if [ -f VERSION ]; then
             version=$(cat VERSION)
           else
@@ -36,14 +39,12 @@ jobs:
           # Export for future steps
           echo "new_version=$new_version" >> $GITHUB_ENV
 
-      # 3. Commit the new version
       - name: Commit version bump
         run: |
-          git config --local user.name "GitHub Actions"
-          git config --local user.email "actions@github.com"
-          git add VERSION
           git commit -m "Bump version to $new_version"
           git push origin deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Docker Hub
         run: docker login "${{ secrets.DOCKER_USERNAME }}".azurecr.io -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
